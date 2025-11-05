@@ -18,7 +18,11 @@
         "DATABASE": "cpt_data"
     },
     "LOGGING": {
-        "DURATION": 60,
-        "INTERVAL": 1
+        "DURATION": 180,
+        "INTERVAL": 1,
+        "START_QUERY":-180,
+        "END_QUERY":300 
     }
+
+
 }

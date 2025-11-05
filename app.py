@@ -88,13 +88,20 @@ def plot(box_id, timestamp_str):
 
 
     config = read_config()
-    log_duration = int(config['LOGGING']['DURATION'])
+    log_start = int(config['LOGGING']['START_QUERY'])
+    log_end = int(config['LOGGING']['END_QUERY'])
 
-    start_time = timestamp - timedelta(seconds=log_duration/2)
-    end_time = timestamp + timedelta(seconds=log_duration/2)
-
+    start_time = timestamp + timedelta(seconds=log_start)
+    end_time = timestamp + timedelta(seconds=log_end)
+    
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
+
+    # Fetch barcode for the title
+    barcode_query = "SELECT barcode FROM box_log WHERE box_id = %s AND timestamp = %s"
+    cursor.execute(barcode_query, (box_id, timestamp))
+    barcode_result = cursor.fetchone()
+    barcode_value = barcode_result['barcode'] if barcode_result else f"Box ID {box_id}"
 
     query = "SELECT * FROM data_log WHERE box_id = %s AND timestamp BETWEEN %s AND %s"
     cursor.execute(query, (box_id, start_time, end_time))
@@ -107,7 +114,7 @@ def plot(box_id, timestamp_str):
 
     df = pd.DataFrame(data)
 
-    fig = px.line(df, x='timestamp', y=['power', 'voltage', 'temperature1', 'temperature2'], title=f'Data Log for Box ID {box_id}')
+    fig = px.line(df, x='timestamp', y=['power', 'voltage', 'temperature1', 'temperature2'], title=f'Barcode: [{barcode_value}]')
 
     plot_html = fig.to_html(full_html=False)
 
@@ -121,10 +128,11 @@ def export_csv(box_id, timestamp_str):
         timestamp = datetime.strptime(timestamp_str.split('.')[0], '%Y-%m-%d %H:%M:%S')
 
     config = read_config()
-    log_duration = int(config['LOGGING']['DURATION'])
+    log_start = int(config['LOGGING']['START_QUERY'])
+    log_end = int(config['LOGGING']['END_QUERY'])
 
-    start_time = timestamp - timedelta(seconds=log_duration/2)
-    end_time = timestamp + timedelta(seconds=log_duration/2)
+    start_time = timestamp + timedelta(seconds=log_start)
+    end_time = timestamp + timedelta(seconds=log_end)
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
