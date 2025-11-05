@@ -1,0 +1,5 @@
+python-snap7
+mysql-connector-python
+flask
+matplotlib
+pandas

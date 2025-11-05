@@ -1,0 +1,26 @@
+{
+    "PLC": {
+        "IP_ADDRESS": "192.168.1.10",
+        "RACK": 0,
+        "SLOT": 1,
+        "TRIGGER_DB": 1,
+        "TRIGGER_DB_OFFSET": 0,
+        "TRIGGER_DB_BIT": 0,
+        "BOX_ID_DB": 1,
+        "BOX_ID_DB_OFFSET": 2,
+        "BARCODE_DB": 1,
+        "BARCODE_DB_OFFSET": 4,
+        "DATA_TRIGGER_DB": 1,
+        "DATA_TRIGGER_DB_OFFSET": 20
+    },
+    "DATABASE": {
+        "HOST": "localhost",
+        "USER": "root",
+        "PASSWORD": "password",
+        "DATABASE": "plc_data"
+    },
+    "LOGGING": {
+        "DURATION": 180,
+        "INTERVAL": 1
+    }
+}

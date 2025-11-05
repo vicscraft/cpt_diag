@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Search</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Barcode Search</h1>
+    <form method="post">
+        <input type="text" name="barcode_pattern" placeholder="Barcode Pattern">
+        <input type="number" name="box_id" placeholder="Box ID">
+        <input type="date" name="start_date">
+        <input type="date" name="end_date">
+        <button type="submit">Search</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Box ID</th>
+                <th>Barcode</th>
+                <th>Timestamp</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for barcode in barcodes %}
+            <tr>
+                <td>{{ barcode.box_id }}</td>
+                <td>{{ barcode.barcode }}</td>
+                <td>{{ barcode.timestamp }}</td>
+                <td>
+                    <a href="{{ url_for('plot', box_id=barcode.box_id, timestamp_str=barcode.timestamp) }}">Show Data</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
