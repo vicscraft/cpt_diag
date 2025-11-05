@@ -9,10 +9,10 @@
 <body>
     <h1>Barcode Search</h1>
     <form method="post">
-        <input type="text" name="barcode_pattern" placeholder="Barcode Pattern">
-        <input type="number" name="box_id" placeholder="Box ID">
-        <input type="date" name="start_date">
-        <input type="date" name="end_date">
+        <input type="text" name="barcode_pattern" placeholder="Barcode Pattern" value="{{ barcode_pattern if barcode_pattern else '' }}">
+        <input type="number" name="box_id" placeholder="Box ID" value="{{ box_id if box_id else '' }}">
+        <input type="date" name="start_date" value="{{ start_date }}">
+        <input type="date" name="end_date" value="{{ end_date }}">
         <button type="submit">Search</button>
     </form>
 
@@ -32,7 +32,7 @@
                 <td>{{ barcode.barcode }}</td>
                 <td>{{ barcode.timestamp }}</td>
                 <td>
-                    <a href="{{ url_for('plot', box_id=barcode.box_id, timestamp_str=barcode.timestamp) }}">Show Data</a>
+                    <a href="{{ url_for('plot', box_id=barcode.box_id, timestamp_str=barcode.timestamp) }}" target="_blank">Show Data</a>
                 </td>
             </tr>
             {% endfor %}

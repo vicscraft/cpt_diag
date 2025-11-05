@@ -21,6 +21,9 @@ class PLCMonitor:
         self.client.disconnect()
         print("Disconnected from PLC")
 
+    def is_connected(self):
+        return self.client.get_connected()
+
     def read_trigger_bit(self, db_number, offset, bit):
         try:
             data = self.client.db_read(db_number, offset, 1)

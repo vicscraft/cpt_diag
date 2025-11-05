@@ -30,6 +30,11 @@ def get_db_connection():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     barcodes = []
+    barcode_pattern = ''
+    box_id = ''
+    start_date = datetime.now().strftime('%Y-%m-%d')
+    end_date = datetime.now().strftime('%Y-%m-%d')
+
     if request.method == 'POST':
         barcode_pattern = request.form.get('barcode_pattern', '')
         box_id = request.form.get('box_id', '')
@@ -52,15 +57,25 @@ def index():
             query += " AND timestamp >= %s"
             params.append(start_date)
         if end_date:
+            end_date_inclusive = end_date + ' 23:59:59'
             query += " AND timestamp <= %s"
-            params.append(end_date)
+            params.append(end_date_inclusive)
 
         cursor.execute(query, tuple(params))
         barcodes = cursor.fetchall()
         cursor.close()
         conn.close()
+    else: # GET request, set default date and perform initial search
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        end_date_inclusive = end_date + ' 23:59:59'
+        query = "SELECT * FROM box_log WHERE timestamp >= %s AND timestamp <= %s"
+        cursor.execute(query, (start_date, end_date_inclusive))
+        barcodes = cursor.fetchall()
+        cursor.close()
+        conn.close()
 
-    return render_template('index.html', barcodes=barcodes)
+    return render_template('index.html', barcodes=barcodes, barcode_pattern=barcode_pattern, box_id=box_id, start_date=start_date, end_date=end_date)
 
 @app.route('/plot/<int:box_id>/<string:timestamp_str>')
 def plot(box_id, timestamp_str):
