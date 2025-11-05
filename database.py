@@ -31,10 +31,10 @@ def create_tables(connection):
         CREATE TABLE IF NOT EXISTS data_log (
             id INT AUTO_INCREMENT PRIMARY KEY,
             box_id INT,
-            value1 FLOAT,
-            value2 FLOAT,
-            value3 FLOAT,
-            value4 FLOAT,
+            power FLOAT,
+            voltage FLOAT,
+            temperature1 FLOAT,
+            temperature2 FLOAT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
         """)

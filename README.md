@@ -8,7 +8,7 @@ This project is a Python application that monitors a Siemens S7 PLC, logs data t
 
 - Monitors a specific bit on a Siemens S7 PLC to trigger logging of a Box ID and Barcode.
 - Monitors 32 separate bits to trigger time-series data logging for 32 different boxes.
-- Logs 4 float data points at a 1-second interval for a configurable duration (default 3 minutes).
+- Logs 4 float data points (power, voltage, temperature1, temperature2) at a 1-second interval for a configurable duration (default 3 minutes).
 - Handles concurrent data logging for multiple boxes using threading.
 - Web interface to search and view logged data.
 - Plot visualization of time-series data.
