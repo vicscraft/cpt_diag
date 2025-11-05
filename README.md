@@ -63,7 +63,7 @@ This project is a Python application that monitors a Siemens S7 PLC, logs data t
 
     Open the `config.json` file and edit the following settings to match your environment:
 
-    -   `PLC`: PLC IP address, rack, slot, and DB addresses.
+    -   `PLC`: PLC IP address, rack, slot, the single `PLC_DB` number, and all the necessary offsets. Note that `BARCODE_DB_OFFSET` is 4, `DATA_TRIGGER_DB_OFFSET` is 22, and `DATA_ARRAY_DB_OFFSET` is 26.
     -   `DATABASE`: MySQL host, user, password, and database name.
     -   `LOGGING`: Duration and interval for data logging.
 

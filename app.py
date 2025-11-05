@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, make_respo
 from io import StringIO
 import mysql.connector
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 import json
 from datetime import datetime, timedelta
 
@@ -92,22 +92,11 @@ def plot(box_id, timestamp_str):
 
     df = pd.DataFrame(data)
 
-    plt.figure(figsize=(10, 6))
-    plt.plot(df['timestamp'], df['power'], label='Power')
-    plt.plot(df['timestamp'], df['voltage'], label='Voltage')
-    plt.plot(df['timestamp'], df['temperature1'], label='Temperature 1')
-    plt.plot(df['timestamp'], df['temperature2'], label='Temperature 2')
-    plt.xlabel('Timestamp')
-    plt.ylabel('Value')
-    plt.title(f'Data Log for Box ID {box_id}')
-    plt.legend()
-    plt.grid(True)
+    fig = px.line(df, x='timestamp', y=['power', 'voltage', 'temperature1', 'temperature2'], title=f'Data Log for Box ID {box_id}')
 
-    plot_path = f'static/plot_{box_id}_{timestamp.strftime("%Y%m%d%H%M%S")}.png'
-    plt.savefig(plot_path)
-    plt.close()
+    plot_html = fig.to_html(full_html=False)
 
-    return render_template('plot.html', plot_url=plot_path, box_id=box_id, timestamp_str=timestamp_str)
+    return render_template('plot.html', plot_html=plot_html, box_id=box_id, timestamp_str=timestamp_str)
 
 @app.route('/export_csv/<int:box_id>/<string:timestamp_str>')
 def export_csv(box_id, timestamp_str):

@@ -63,6 +63,15 @@ class PLCMonitor:
         except Exception as e:
             print(f"Error reading float data: {e}")
             return None
+    def write_bit(self, db_number, offset, bit, value):
+        try:
+            data = self.client.db_read(db_number, offset, 1)
+            set_bool(data, 0, bit, value)
+            self.client.db_write(db_number, offset, data)
+            print(f"Wrote {value} to DB{db_number}, byte {offset}, bit {bit}")
+        except Exception as e:
+            print(f"Error writing bit: {e}")
+
 
 def unpack_word(byte_array):
     bits = []

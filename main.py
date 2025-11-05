@@ -11,15 +11,18 @@ def read_config():
         config = json.load(f)
     return config
 
-def data_logging_thread(plc_monitor, db_connection, box_id, duration, interval, data_db, data_db_offset):
+def data_logging_thread(plc_monitor, db_connection, box_id, duration, interval, plc_db, data_array_db_offset, data_trigger_db_offset, bit_index):
     print(f"Starting data logging for box {box_id}")
     start_time = time.time()
     while time.time() - start_time < duration:
-        values = plc_monitor.read_float_data(data_db, data_db_offset)
+        values = plc_monitor.read_float_data(plc_db, data_array_db_offset)
         if values:
             log_float_data(db_connection, box_id, values)
         time.sleep(interval)
     print(f"Finished data logging for box {box_id}")
+    byte_offset = data_trigger_db_offset + (bit_index // 8)
+    bit_in_byte = bit_index % 8
+    plc_monitor.write_bit(plc_db, byte_offset, bit_in_byte, False)
 
 def main():
     config = read_config()
@@ -28,15 +31,13 @@ def main():
     plc_ip = config['PLC']['IP_ADDRESS']
     plc_rack = int(config['PLC']['RACK'])
     plc_slot = int(config['PLC']['SLOT'])
-    trigger_db = int(config['PLC']['TRIGGER_DB'])
+    plc_db = int(config['PLC']['PLC_DB'])
     trigger_db_offset = int(config['PLC']['TRIGGER_DB_OFFSET'])
     trigger_db_bit = int(config['PLC']['TRIGGER_DB_BIT'])
-    box_id_db = int(config['PLC']['BOX_ID_DB'])
     box_id_db_offset = int(config['PLC']['BOX_ID_DB_OFFSET'])
-    barcode_db = int(config['PLC']['BARCODE_DB'])
     barcode_db_offset = int(config['PLC']['BARCODE_DB_OFFSET'])
-    data_trigger_db = int(config['PLC']['DATA_TRIGGER_DB'])
     data_trigger_db_offset = int(config['PLC']['DATA_TRIGGER_DB_OFFSET'])
+    data_array_db_offset = int(config['PLC']['DATA_ARRAY_DB_OFFSET'])
 
     # Database settings
     db_host = config['DATABASE']['HOST']
@@ -63,21 +64,22 @@ def main():
     try:
         while True:
             # Monitor for box logging trigger
-            trigger_bit = plc_monitor.read_trigger_bit(trigger_db, trigger_db_offset, trigger_db_bit)
+            trigger_bit = plc_monitor.read_trigger_bit(plc_db, trigger_db_offset, trigger_db_bit)
             if trigger_bit:
-                box_id = plc_monitor.read_box_id(box_id_db, box_id_db_offset)
-                barcode = plc_monitor.read_barcode(barcode_db, barcode_db_offset)
+                box_id = plc_monitor.read_box_id(plc_db, box_id_db_offset)
+                barcode = plc_monitor.read_barcode(plc_db, barcode_db_offset)
                 if box_id is not None and barcode is not None:
                     log_box_data(db_connection, box_id, barcode)
+                    plc_monitor.write_bit(plc_db, trigger_db_offset, trigger_db_bit, False)
 
             # Monitor for data logging triggers
-            data_trigger_bits = plc_monitor.read_data_trigger_bits(data_trigger_db, data_trigger_db_offset)
+            data_trigger_bits = plc_monitor.read_data_trigger_bits(plc_db, data_trigger_db_offset)
             if data_trigger_bits:
                 for i, bit in enumerate(data_trigger_bits):
                     box_id = i + 1
                     if bit and box_id not in active_threads:
                         thread = threading.Thread(target=data_logging_thread, args=(
-                            plc_monitor, db_connection, box_id, log_duration, log_interval, data_trigger_db, data_trigger_db_offset + 4 + (i * 16)
+                            plc_monitor, db_connection, box_id, log_duration, log_interval, plc_db, data_array_db_offset + (i * 16), data_trigger_db_offset, i
                         ))
                         thread.start()
                         active_threads[box_id] = thread
