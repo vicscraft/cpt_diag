@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Plot</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <h1>Data Plot</h1>
     <div id="plotly-plot">{{ plot_html | safe }}</div>
     <br>
-    <form action="{{ url_for('export_csv', box_id=box_id, timestamp_str=timestamp_str) }}" method="get">
+    <form action="/export_csv/{{ box_id }}/{{ timestamp_str }}" method="get">
         <button type="submit">Export Data</button>
     </form>
 </body>

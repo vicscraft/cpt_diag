@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barcode Search</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <h1>Barcode Search</h1>
@@ -32,7 +32,7 @@
                 <td>{{ barcode.barcode }}</td>
                 <td>{{ barcode.timestamp }}</td>
                 <td>
-                    <a href="{{ url_for('plot', box_id=barcode.box_id, timestamp_str=barcode.timestamp) }}" target="_blank">Show Data</a>
+                    <a href="/plot/{{ barcode.box_id }}/{{ barcode.timestamp }}" target="_blank">Show Data</a>
                 </td>
             </tr>
             {% endfor %}

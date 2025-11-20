@@ -1,6 +1,8 @@
 python-snap7
 mysql-connector-python
-flask
+fastapi
+uvicorn[standard]
+jinja2
 matplotlib
 pandas
 plotly
